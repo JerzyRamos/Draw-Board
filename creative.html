@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Draw Board</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.min.js"></script>
+  <script src="creative.js"></script>
+  <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">-->
+  <!--<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>-->
+
+  <link rel="stylesheet" type="text/css" href="creative.css">
+
+</head>
+
+<body ng-app='app' ng-controller='mainCtrl' onload="starting()">
+  <div class="typewriter" id="title">
+    <h1>Try drawing on this board.</h1>
+  </div>
+  <div id="hint">
+    <h2>Try drawing the shapes without lifting up the mouse.</h2>
+  </div>
+  <div id="middle">
+    <img src="" id="pic">
+    </div>
+  <canvas width="fill" height="fill"></canvas>
+
+  <div class="palette" id="board">
+
+    <div id='buttonArea'>
+      <button ng-click="clearBoard()" id="clear" class="button1">Clear</button>
+      <button ng-click="challenge()" id="challenge" class="button1">Challenge</button>
+
+    </div>
+    <img src="B2.png" ng-click="moveBoard()" id="move">
+
+  </div>
+  <!--<button ng-click="moveBoard()" id="move" class="button2"><</button>-->
+  <div>
+    <img src="B1.png" ng-click="moveBoard()" id="move2">
+  </div>
+</body>
+<script type="text/javascript">
+  function starting() {
+    var x=4000;
+    //var x=-1000;
+    document.getElementById("board").style.transform = "translateX(-15vw)";
+
+    setTimeout(function() {
+      document.getElementById("title").style.opacity = 0;
+    }, x);
+    setTimeout(function() {
+      document.getElementById("board").style.transform = "translateX(0vw)";
+      document.getElementById("board").style.opacity = 1;
+    }, x+1000);
+    setTimeout(function() {
+      document.getElementById("board").style.transform = "translateX(0vw)";
+      document.getElementById("board").style.opacity = 1;
+    }, x+1000);
+    setTimeout(function() {
+      document.getElementById("move2").style.opacity = 1;
+
+    }, x+1500);
+
+  }
+  const canvas = document.querySelector('canvas')
+  const context = canvas.getContext('2d')
+  const palette = ["#ff3333", "#ffb84d", "#ffff66", "#00e64d", "#3385ff", "#0000b3", "#7300e6", "#000000"]
+  const colorDiv = document.querySelector(".palette")
+  palette.forEach(
+    color => {
+      const button = document.createElement("button")
+      button.classList.add("color")
+      button.style.backgroundColor = color
+      colorDiv.appendChild(button)
+      button.addEventListener('click', function() {
+        context.strokeStyle = color;
+      })
+    }
+  )
+
+  function setLine() {
+    canvas.setAttribute('width', window.innerWidth)
+    canvas.setAttribute('height', window.innerHeight)
+    context.strokeStyle = palette[7]
+    context.lineWidth = 3
+  }
+  window.addEventListener("setLine", setLine)
+  setLine()
+
+
+  var drawing, X1, Y1, X2, Y2
+
+  function getCoordinates(event)
+  {
+    return [event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop]
+  }
+
+  function clickCoordinates(event, canvas) {
+    var [X, Y] = getCoordinates(event)
+    X2 = X1
+    Y2 = Y1
+    X1 = X
+    Y1 = Y
+  }
+
+  function draw() 
+  {
+    context.beginPath()
+    context.moveTo(X2, Y2)
+    context.lineTo(X1, Y1)
+    context.closePath()
+    context.stroke()
+  }
+
+  function startDrawing(event)
+  {
+    drawing = true
+    clickCoordinates(event, this)
+  }
+
+  function updateDrawing(event) 
+  {
+    if (drawing) {
+      clickCoordinates(event, this)
+      draw()
+    }
+  }
+
+  function stopDrawing() 
+  {
+    X1 = null
+    Y1 = null
+    drawing = false
+  }
+  canvas.addEventListener('mousedown', startDrawing)
+  canvas.addEventListener('mousemove', updateDrawing)
+  canvas.addEventListener('mouseup', stopDrawing)
+  canvas.addEventListener('mouseleave', stopDrawing)
+</script>
+
+
+</html>
